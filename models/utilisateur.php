@@ -6,11 +6,11 @@ class Utilisateur {
     // Récupérer tous les utilisateurs avec leur rôle
     public static function getAll($pdo) {
         $stmt = $pdo->query("
-            SELECT u.*, r.LIBELLE as ROLE_LIBELLE
-            FROM UTILISATEUR u
-            JOIN ROLE r ON u.ID_ROLE = r.ID_ROLE
-            ORDER BY u.NOM ASC
-        ");
+           SELECT u.*, r.LIBELLE as ROLE_LIBELLE,
+       (u.DERNIERE_CONNEXION >= NOW() - INTERVAL 5 MINUTE) AS EN_LIGNE
+FROM UTILISATEUR u
+JOIN ROLE r ON u.ID_ROLE = r.ID_ROLE
+ORDER BY u.NOM ASC");
         return $stmt->fetchAll();
     }
 

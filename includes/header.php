@@ -2,6 +2,21 @@
 if (!estConnecte()) {
     rediriger(BASE_URL . '/views/auth/login.php');
 }
+
+// Vérifier en base que le compte est toujours actif
+$stmt = $pdo->prepare("SELECT STATUT FROM UTILISATEUR WHERE ID_USER = ?");
+$stmt->execute([$_SESSION['user']['ID_USER']]);
+$statut_db = $stmt->fetchColumn();
+
+if ($statut_db !== 'actif') {
+    session_destroy();
+    $_SESSION['error'] = 'Votre compte a été désactivé. Contactez l\'administrateur.';
+    rediriger(BASE_URL . '/views/auth/login.php');
+}
+
+// Pouls de présence : mise à jour à chaque page
+$pdo->prepare("UPDATE UTILISATEUR SET DERNIERE_CONNEXION = NOW() WHERE ID_USER = ?")
+    ->execute([$_SESSION['user']['ID_USER']]);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
