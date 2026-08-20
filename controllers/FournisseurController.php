@@ -30,6 +30,7 @@ switch ($action) {
             'email'     => $_POST['email'] ?? '',
             'adresse'   => $_POST['adresse'] ?? '',
         ]);
+        journaliser($pdo, 'fournisseur', 'creation', 'Création du fournisseur "' . ($_POST['nom'] ?? '') . '"');
         $_SESSION['success'] = 'Fournisseur ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/FournisseurController.php?action=list');
         break;
@@ -55,6 +56,7 @@ switch ($action) {
             'email'     => $_POST['email'] ?? '',
             'adresse'   => $_POST['adresse'] ?? '',
         ]);
+        journaliser($pdo, 'fournisseur', 'modification', 'Modification du fournisseur ID ' . $id);
         $_SESSION['success'] = 'Fournisseur modifié avec succès.';
         rediriger(BASE_URL . '/controllers/FournisseurController.php?action=list');
         break;
@@ -65,7 +67,11 @@ switch ($action) {
         if ($nb > 0) {
             $_SESSION['error'] = "Impossible de supprimer ce fournisseur : $nb article(s) lui sont liés.";
         } else {
+            $fournisseurASupprimer = Fournisseur::getById($pdo, $_GET['id'] ?? 0);
             Fournisseur::delete($pdo, $_GET['id'] ?? 0);
+            if ($fournisseurASupprimer) {
+                journaliser($pdo, 'fournisseur', 'suppression', 'Suppression du fournisseur "' . $fournisseurASupprimer['NOM'] . '"');
+            }
             $_SESSION['success'] = 'Fournisseur supprimé avec succès.';
         }
         rediriger(BASE_URL . '/controllers/FournisseurController.php?action=list');

@@ -28,6 +28,7 @@ switch ($action) {
             'id_categorie'   => $_POST['id_categorie'] ?? '',
             'id_fournisseur' => $_POST['id_fournisseur'] ?? '',
         ]);
+        journaliser($pdo, 'article', 'creation', 'Création de l\'article "' . ($_POST['designation'] ?? '') . '"');
         $_SESSION['success'] = 'Article ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/ArticleController.php?action=list');
         break;
@@ -53,12 +54,17 @@ switch ($action) {
             'id_categorie'   => $_POST['id_categorie'] ?? '',
             'id_fournisseur' => $_POST['id_fournisseur'] ?? '',
         ]);
+        journaliser($pdo, 'article', 'modification', 'Modification de l\'article ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Article modifié avec succès.';
         rediriger(BASE_URL . '/controllers/ArticleController.php?action=list');
         break;
 
     case 'supprimer':
+        $articleASupprimer = Article::getById($pdo, $_GET['id'] ?? 0);
         Article::delete($pdo, $_GET['id'] ?? 0);
+        if ($articleASupprimer) {
+            journaliser($pdo, 'article', 'suppression', 'Suppression de l\'article "' . $articleASupprimer['DESIGNATION'] . '"');
+        }
         $_SESSION['success'] = 'Article supprimé avec succès.';
         rediriger(BASE_URL . '/controllers/ArticleController.php?action=list');
         break;

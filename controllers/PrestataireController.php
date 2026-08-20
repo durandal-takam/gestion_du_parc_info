@@ -22,6 +22,7 @@ switch ($action) {
             'email'     => $_POST['email'] ?? '',
             'adresse'   => $_POST['adresse'] ?? '',
         ]);
+        journaliser($pdo, 'prestataire', 'creation', 'Création du prestataire "' . ($_POST['nom'] ?? '') . '"');
         $_SESSION['success'] = 'Prestataire ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/PrestataireController.php?action=list');
         break;
@@ -42,12 +43,17 @@ switch ($action) {
             'email'     => $_POST['email'] ?? '',
             'adresse'   => $_POST['adresse'] ?? '',
         ]);
+        journaliser($pdo, 'prestataire', 'modification', 'Modification du prestataire ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Prestataire modifié avec succès.';
         rediriger(BASE_URL . '/controllers/PrestataireController.php?action=list');
         break;
 
     case 'supprimer':
+        $prestataireASupprimer = Prestataire::getById($pdo, $_GET['id'] ?? 0);
         Prestataire::delete($pdo, $_GET['id'] ?? 0);
+        if ($prestataireASupprimer) {
+            journaliser($pdo, 'prestataire', 'suppression', 'Suppression du prestataire "' . $prestataireASupprimer['NOM'] . '"');
+        }
         $_SESSION['success'] = 'Prestataire supprimé avec succès.';
         rediriger(BASE_URL . '/controllers/PrestataireController.php?action=list');
         break;

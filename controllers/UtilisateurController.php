@@ -18,6 +18,10 @@ switch ($action) {
         include VIEWS_PATH . 'utilisateurs/liste.php';
         break;
 
+    case 'voir':
+        $utilisateur = Utilisateur::getByIdWithRole($pdo, $_GET['id'] ?? 0);
+        include VIEWS_PATH . 'utilisateurs/voir.php';
+        break;
     case 'ajouter':
         $roles = $pdo->query("SELECT * FROM ROLE")->fetchAll();
         include VIEWS_PATH . 'utilisateurs/ajouter.php';
@@ -29,6 +33,7 @@ switch ($action) {
             rediriger(BASE_URL . '/controllers/UtilisateurController.php?action=ajouter');
         }
         Utilisateur::create($pdo, $_POST);
+        journaliser($pdo, 'utilisateur', 'creation', 'Création de l\'utilisateur ' . ($_POST['prenom'] ?? '') . ' ' . ($_POST['nom'] ?? ''));
         $_SESSION['success'] = "Utilisateur ajouté avec succès";
         rediriger(BASE_URL . '/controllers/UtilisateurController.php?action=list');
         break;
@@ -49,6 +54,7 @@ switch ($action) {
             }
         }
         Utilisateur::update($pdo, $id, $_POST);
+        journaliser($pdo, 'utilisateur', 'modification', 'Modification de l\'utilisateur ID ' . $id);
         $_SESSION['success'] = "Utilisateur modifié avec succès";
         rediriger(BASE_URL . '/controllers/UtilisateurController.php?action=list');
         break;
@@ -58,7 +64,11 @@ switch ($action) {
         if ($id == $_SESSION['user']['ID_USER']) {
             $_SESSION['error'] = "Vous ne pouvez pas vous supprimer vous-même";
         } else {
+            $utilisateurASupprimer = Utilisateur::getById($pdo, $id);
             Utilisateur::delete($pdo, $id);
+            if ($utilisateurASupprimer) {
+                journaliser($pdo, 'utilisateur', 'suppression', 'Suppression de l\'utilisateur ' . $utilisateurASupprimer['PRENOM'] . ' ' . $utilisateurASupprimer['NOM']);
+            }
             $_SESSION['success'] = "Utilisateur supprimé";
         }
         rediriger(BASE_URL . '/controllers/UtilisateurController.php?action=list');

@@ -20,6 +20,7 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'role', 'creation', 'Création du rôle "' . ($_POST['libelle'] ?? '') . '"');
         $_SESSION['success'] = 'Rôle ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/RoleController.php?action=list');
         break;
@@ -38,6 +39,7 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'role', 'modification', 'Modification du rôle ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Rôle modifié avec succès.';
         rediriger(BASE_URL . '/controllers/RoleController.php?action=list');
         break;
@@ -48,7 +50,11 @@ switch ($action) {
         if ($nb > 0) {
             $_SESSION['error'] = "Impossible de supprimer ce rôle : $nb utilisateur(s) l'utilisent.";
         } else {
+            $roleASupprimer = Role::getById($pdo, $_GET['id'] ?? 0);
             Role::delete($pdo, $_GET['id'] ?? 0);
+            if ($roleASupprimer) {
+                journaliser($pdo, 'role', 'suppression', 'Suppression du rôle "' . $roleASupprimer['LIBELLE'] . '"');
+            }
             $_SESSION['success'] = 'Rôle supprimé avec succès.';
         }
         rediriger(BASE_URL . '/controllers/RoleController.php?action=list');

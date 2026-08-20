@@ -20,7 +20,17 @@ ORDER BY u.NOM ASC");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
-
+    
+    public static function getByIdWithRole($pdo, $id) {
+        $stmt = $pdo->prepare("
+            SELECT u.*, r.LIBELLE AS ROLE_LIBELLE
+            FROM UTILISATEUR u
+            JOIN ROLE r ON u.ID_ROLE = r.ID_ROLE
+            WHERE u.ID_USER = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
     // Créer un nouvel utilisateur
     public static function create($pdo, $data) {
         $mdp_hash = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);

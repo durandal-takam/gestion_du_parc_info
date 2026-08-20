@@ -4,6 +4,12 @@
 <main class="content">
     <h1>Tableau de bord</h1>
 
+    <?php if (($stats['alertes_total'] ?? 0) > 0): ?>
+        <div style="background: #fdecea; border: 1px solid #f5c6cb; border-radius: 6px; padding: 10px 15px; margin-bottom: 15px;">
+            🔔 <strong><?= $stats['alertes_total'] ?> alerte(s) active(s)</strong> —
+            <a href="<?= BASE_URL ?>/controllers/AlertesController.php?action=index">Voir le centre d'alertes</a>
+        </div>
+    <?php endif; ?>
     <div class="dashboard-grid">
         <div class="stat-card"><h3>Équipements</h3><div class="number"><?= $stats['total_equipements'] ?></div></div>
         <div class="stat-card"><h3>Disponibles</h3><div class="number"><?= $stats['equipements_disponibles'] ?></div></div>

@@ -26,6 +26,7 @@ switch ($action) {
             'montant'        => $_POST['montant'] ?? '',
             'observation'    => $_POST['observation'] ?? '',
         ]);
+        journaliser($pdo, 'contrat', 'creation', 'Création du contrat "' . ($_POST['reference'] ?? '') . '"');
         $_SESSION['success'] = 'Contrat ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/ContratController.php?action=list');
         break;
@@ -49,12 +50,17 @@ switch ($action) {
             'montant'        => $_POST['montant'] ?? '',
             'observation'    => $_POST['observation'] ?? '',
         ]);
+        journaliser($pdo, 'contrat', 'modification', 'Modification du contrat ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Contrat modifié avec succès.';
         rediriger(BASE_URL . '/controllers/ContratController.php?action=list');
         break;
 
     case 'supprimer':
+        $contratASupprimer = ContratMaintenance::getById($pdo, $_GET['id'] ?? 0);
         ContratMaintenance::delete($pdo, $_GET['id'] ?? 0);
+        if ($contratASupprimer) {
+            journaliser($pdo, 'contrat', 'suppression', 'Suppression du contrat "' . $contratASupprimer['REFERENCE'] . '"');
+        }
         $_SESSION['success'] = 'Contrat supprimé avec succès.';
         rediriger(BASE_URL . '/controllers/ContratController.php?action=list');
         break;

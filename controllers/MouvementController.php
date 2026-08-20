@@ -24,12 +24,14 @@ switch ($action) {
             'type_mouvement' => $_POST['type_mouvement'] ?? '',
             'observation'    => $_POST['observation'] ?? '',
         ]);
+        journaliser($pdo, 'mouvement', 'creation', 'Mouvement "' . ($_POST['type_mouvement'] ?? '') . '" pour le matériel ID ' . ($_POST['id_materiel'] ?? ''));
         $_SESSION['success'] = 'Mouvement enregistré avec succès.';
         rediriger(BASE_URL . '/controllers/MouvementController.php?action=list');
         break;
 
     case 'supprimer':
         Mouvement::delete($pdo, $_GET['id'] ?? 0);
+        journaliser($pdo, 'mouvement', 'suppression', 'Suppression du mouvement ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Mouvement supprimé.';
         rediriger(BASE_URL . '/controllers/MouvementController.php?action=list');
         break;

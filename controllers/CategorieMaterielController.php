@@ -20,6 +20,7 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'categorie_materiel', 'creation', 'Création de la catégorie "' . ($_POST['libelle'] ?? '') . '"');
         $_SESSION['success'] = 'Catégorie ajoutée avec succès.';
         rediriger(BASE_URL . '/controllers/CategorieMaterielController.php?action=list');
         break;
@@ -38,12 +39,17 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'categorie_materiel', 'modification', 'Modification de la catégorie ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Catégorie modifiée avec succès.';
         rediriger(BASE_URL . '/controllers/CategorieMaterielController.php?action=list');
         break;
 
     case 'supprimer':
+        $categorieASupprimer = CategorieMateriel::getById($pdo, $_GET['id'] ?? 0);
         CategorieMateriel::delete($pdo, $_GET['id'] ?? 0);
+        if ($categorieASupprimer) {
+            journaliser($pdo, 'categorie_materiel', 'suppression', 'Suppression de la catégorie "' . $categorieASupprimer['LIBELLE'] . '"');
+        }
         $_SESSION['success'] = 'Catégorie supprimée avec succès.';
         rediriger(BASE_URL . '/controllers/CategorieMaterielController.php?action=list');
         break;

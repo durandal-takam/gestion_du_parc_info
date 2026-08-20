@@ -26,6 +26,7 @@ switch ($action) {
         ]);
         if ($result === true) {
             $_SESSION['success'] = 'Matériel affecté avec succès.';
+            journaliser($pdo, 'affectation', 'creation', 'Affectation du matériel ID ' . ($_POST['id_materiel'] ?? '') . ' à l\'utilisateur ID ' . ($_POST['id_user'] ?? ''));
         } else {
             $_SESSION['error'] = $result;
         }
@@ -36,6 +37,7 @@ switch ($action) {
         $result = Affectation::terminer($pdo, $_GET['id'] ?? 0);
         if ($result === true) {
             $_SESSION['success'] = 'Affectation terminée, matériel libéré.';
+            journaliser($pdo, 'affectation', 'retour', 'Fin d\'affectation (ID ' . ($_GET['id'] ?? 0) . '), matériel libéré');
         } else {
             $_SESSION['error'] = $result;
         }
@@ -45,6 +47,7 @@ switch ($action) {
     case 'supprimer':
         Affectation::delete($pdo, $_GET['id'] ?? 0);
         $_SESSION['success'] = 'Affectation supprimée.';
+        journaliser($pdo, 'affectation', 'suppression', 'Suppression d\'une affectation (ID ' . ($_GET['id'] ?? 0) . ')');
         rediriger(BASE_URL . '/controllers/AffectationController.php?action=list');
         break;
 }

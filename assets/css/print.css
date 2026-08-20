@@ -1,0 +1,5 @@
+@media print {
+    .sidebar, .top-bar, .page-header, .btn { display: none !important; }
+    .app-container, .main-layout, .content { display: block !important; margin: 0 !important; padding: 0 !important; }
+    .fiche-papier { border: none !important; margin: 0 !important; }
+}

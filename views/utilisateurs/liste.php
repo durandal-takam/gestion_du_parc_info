@@ -51,6 +51,7 @@
                         
                     </td>
                     <td>
+                        <a href="<?= BASE_URL ?>/controllers/UtilisateurController.php?action=voir&id=<?= $u['ID_USER'] ?>" class="btn btn-small">👁️ Voir</a>
                         <a href="<?= BASE_URL ?>/controllers/UtilisateurController.php?action=modifier&id=<?= $u['ID_USER'] ?>" class="btn btn-small">✏️ Modifier</a>
                         <a href="<?= BASE_URL ?>/controllers/UtilisateurController.php?action=supprimer&id=<?= $u['ID_USER'] ?>" class="btn btn-small btn-danger" onclick="return confirm('Supprimer cet utilisateur ?')">🗑️ Supprimer</a>
                     </td>

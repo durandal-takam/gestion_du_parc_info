@@ -58,8 +58,8 @@
                 <input type="text" name="localisation" id="localisation" value="<?= h($materiel['LOCALISATION']) ?>">
             </div>
             <div class="form-group">
-                <label for="garantie">Garantie</label>
-                <input type="text" name="garantie" id="garantie" value="<?= h($materiel['GARANTIE']) ?>">
+                <label for="garantie">Fin de garantie</label>
+                <input type="date" name="garantie" id="garantie" value="<?= h($materiel['GARANTIE'] ?: '') ?>">
             </div>
         </div>
 

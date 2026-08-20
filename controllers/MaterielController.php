@@ -28,6 +28,7 @@ switch ($action) {
             'configuration'     => $_POST['configuration'] ?? '',
             'date_mise_en_service' => $_POST['date_mise_en_service'] ?? '',
         ]);
+        journaliser($pdo, 'materiel', 'creation', 'Ajout du matériel "' . ($_POST['designation'] ?? '') . '"');
         $_SESSION['success'] = 'Matériel ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/MaterielController.php?action=list');
         break;
@@ -54,12 +55,17 @@ switch ($action) {
             'configuration'     => $_POST['configuration'] ?? '',
             'date_mise_en_service' => $_POST['date_mise_en_service'] ?? '',
         ]);
+        journaliser($pdo, 'materiel', 'modification', 'Modification du matériel "' . ($_POST['designation'] ?? '') . '" (ID ' . ($_GET['id'] ?? 0) . ')');
         $_SESSION['success'] = 'Matériel modifié avec succès.';
         rediriger(BASE_URL . '/controllers/MaterielController.php?action=list');
         break;
 
-    case 'supprimer':
+        case 'supprimer':
+        $materielASupprimer = Materiel::getById($pdo, $_GET['id'] ?? 0);
         Materiel::delete($pdo, $_GET['id'] ?? 0);
+        if ($materielASupprimer) {
+            journaliser($pdo, 'materiel', 'suppression', 'Suppression du matériel "' . $materielASupprimer['DESIGNATION'] . '" (ID ' . $materielASupprimer['ID_MATERIEL'] . ')');
+        }
         $_SESSION['success'] = 'Matériel supprimé avec succès.';
         rediriger(BASE_URL . '/controllers/MaterielController.php?action=list');
         break;

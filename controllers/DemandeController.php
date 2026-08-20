@@ -26,6 +26,7 @@ switch ($action) {
             'description'        => $_POST['description'] ?? '',
             'priorite'           => $_POST['priorite'] ?? 'Moyenne',
         ]);
+         journaliser($pdo, 'demande', 'creation', 'Ticket créé par l\'utilisateur ID ' . $_SESSION['user']['ID_USER'] . ' pour le matériel ID ' . ($_POST['id_materiel'] ?? ''));
         $_SESSION['success'] = 'Ticket créé avec succès.';
         rediriger(BASE_URL . '/controllers/DemandeController.php?action=list');
         break;
@@ -49,12 +50,14 @@ switch ($action) {
             'statut'             => $_POST['statut'] ?? 'Ouvert',
             'priorite'           => $_POST['priorite'] ?? 'Moyenne',
         ]);
+        journaliser($pdo, 'demande', 'modification', 'Ticket ID ' . ($_GET['id'] ?? 0) . ' mis à jour (statut : ' . ($_POST['statut'] ?? '?') . ')');
         $_SESSION['success'] = 'Ticket mis à jour avec succès.';
         rediriger(BASE_URL . '/controllers/DemandeController.php?action=list');
         break;
 
     case 'supprimer':
         DemandeMaintenance::delete($pdo, $_GET['id'] ?? 0);
+        journaliser($pdo, 'demande', 'suppression', 'Suppression du ticket ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Ticket supprimé.';
         rediriger(BASE_URL . '/controllers/DemandeController.php?action=list');
         break;

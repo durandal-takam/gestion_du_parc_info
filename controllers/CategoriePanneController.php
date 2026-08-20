@@ -20,6 +20,7 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'categorie_panne', 'creation', 'Création de la catégorie de panne "' . ($_POST['libelle'] ?? '') . '"');
         $_SESSION['success'] = 'Catégorie de panne ajoutée avec succès.';
         rediriger(BASE_URL . '/controllers/CategoriePanneController.php?action=list');
         break;
@@ -38,12 +39,17 @@ switch ($action) {
             'libelle'     => $_POST['libelle'] ?? '',
             'description' => $_POST['description'] ?? '',
         ]);
+        journaliser($pdo, 'categorie_panne', 'modification', 'Modification de la catégorie de panne ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Catégorie de panne modifiée avec succès.';
         rediriger(BASE_URL . '/controllers/CategoriePanneController.php?action=list');
         break;
 
     case 'supprimer':
+        $categorieASupprimer = CategoriePanne::getById($pdo, $_GET['id'] ?? 0);
         CategoriePanne::delete($pdo, $_GET['id'] ?? 0);
+        if ($categorieASupprimer) {
+            journaliser($pdo, 'categorie_panne', 'suppression', 'Suppression de la catégorie de panne "' . $categorieASupprimer['LIBELLE'] . '"');
+        }
         $_SESSION['success'] = 'Catégorie de panne supprimée avec succès.';
         rediriger(BASE_URL . '/controllers/CategoriePanneController.php?action=list');
         break;

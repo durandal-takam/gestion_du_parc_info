@@ -1,4 +1,5 @@
 <?php
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -21,23 +22,30 @@ if ($action === 'login') {
 
         // Vérifier que le compte est actif
         if ($user['STATUT'] !== 'actif') {
+            journaliser($pdo, 'auth', 'connexion_refusee', 'Tentative de connexion avec un compte désactivé (' . $user['LOGIN'] . ')');
             $_SESSION['error'] = 'Votre compte a été désactivé. Contactez l\'administrateur.';
             rediriger(BASE_URL . '/views/auth/login.php');
-        }
+        } 
 
         // Enregistrer la connexion
         $stmt = $pdo->prepare("UPDATE UTILISATEUR SET DERNIERE_CONNEXION = NOW() WHERE ID_USER = ?");
         $stmt->execute([$user['ID_USER']]);
 
         $_SESSION['user'] = $user;
+            session_regenerate_id(true);
+        $_SESSION['derniere_activite'] = time();
+         journaliser($pdo, 'auth', 'connexion', 'Connexion de ' . $user['PRENOM'] . ' ' . $user['NOM']);
         rediriger(BASE_URL . '/index.php');
 
     } else {
+        journaliser($pdo, 'auth', 'connexion_echouee', 'Échec de connexion pour le login "' . $login . '"');
         $_SESSION['error'] = 'Identifiant ou mot de passe incorrect';
         rediriger(BASE_URL . '/views/auth/login.php');
     }
 
 } elseif ($action === 'logout') {
+    journaliser($pdo, 'auth', 'deconnexion',
+        'Déconnexion de ' . ($_SESSION['user']['PRENOM'] ?? '') . ' ' . ($_SESSION['user']['NOM'] ?? ''));
     session_destroy();
     rediriger(BASE_URL . '/views/auth/login.php');
 }

@@ -20,4 +20,7 @@ $stats['en_ligne'] = $pdo->query(
      WHERE DERNIERE_CONNEXION >= NOW() - INTERVAL 5 MINUTE"
 )->fetchColumn();
 
+// Nombre total d'alertes actives
+require_once __DIR__ . '/../models/Alertes.php';
+$stats['alertes_total'] = Alertes::compteur($pdo);
 include VIEWS_PATH . 'dashboard/index.php';

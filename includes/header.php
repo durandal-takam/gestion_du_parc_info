@@ -13,11 +13,20 @@ if ($statut_db !== 'actif') {
     $_SESSION['error'] = 'Votre compte a été désactivé. Contactez l\'administrateur.';
     rediriger(BASE_URL . '/views/auth/login.php');
 }
-
+// Déconnexion automatique après 10 minutes d'inactivité
+$inactivite_max = 10 * 60;
+if (isset($_SESSION['derniere_activite']) && (time() - $_SESSION['derniere_activite']) > $inactivite_max) {
+    session_destroy();
+    session_start();
+    $_SESSION['error'] = 'Session expirée après 10 minutes d\'inactivité.';
+    rediriger(BASE_URL . '/views/auth/login.php');
+}
+$_SESSION['derniere_activite'] = time();
 // Pouls de présence : mise à jour à chaque page
 $pdo->prepare("UPDATE UTILISATEUR SET DERNIERE_CONNEXION = NOW() WHERE ID_USER = ?")
     ->execute([$_SESSION['user']['ID_USER']]);
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -25,6 +34,7 @@ $pdo->prepare("UPDATE UTILISATEUR SET DERNIERE_CONNEXION = NOW() WHERE ID_USER =
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/print.css?v=2" media="print">
 </head>
 <body>
     <div class="app-container">
@@ -39,3 +49,4 @@ $pdo->prepare("UPDATE UTILISATEUR SET DERNIERE_CONNEXION = NOW() WHERE ID_USER =
             </div>
         </header>
         <div class="main-layout">
+            

@@ -23,6 +23,7 @@ switch ($action) {
             'nom_bureau'   => $_POST['nom_bureau'] ?? '',
             'localisation' => $_POST['localisation'] ?? '',
         ]);
+        journaliser($pdo, 'bureau', 'creation', 'Création du bureau "' . ($_POST['nom_bureau'] ?? '') . '"');
         $_SESSION['success'] = 'Bureau ajouté avec succès.';
         rediriger(BASE_URL . '/controllers/BureauController.php?action=list');
         break;
@@ -43,12 +44,17 @@ switch ($action) {
             'nom_bureau'   => $_POST['nom_bureau'] ?? '',
             'localisation' => $_POST['localisation'] ?? '',
         ]);
+        journaliser($pdo, 'bureau', 'modification', 'Modification du bureau ID ' . ($_GET['id'] ?? 0));
         $_SESSION['success'] = 'Bureau modifié avec succès.';
         rediriger(BASE_URL . '/controllers/BureauController.php?action=list');
         break;
 
     case 'supprimer':
+        $bureauASupprimer = Bureau::getById($pdo, $_GET['id'] ?? 0);
         Bureau::delete($pdo, $_GET['id'] ?? 0);
+        if ($bureauASupprimer) {
+            journaliser($pdo, 'bureau', 'suppression', 'Suppression du bureau "' . $bureauASupprimer['NOM_BUREAU'] . '"');
+        }
         $_SESSION['success'] = 'Bureau supprimé avec succès.';
         rediriger(BASE_URL . '/controllers/BureauController.php?action=list');
         break;

@@ -58,8 +58,8 @@
                 <input type="text" name="localisation" id="localisation">
             </div>
             <div class="form-group">
-                <label for="garantie">Garantie</label>
-                <input type="text" name="garantie" id="garantie">
+                <label for="garantie">Fin de garantie</label>
+                <input type="date" name="garantie" id="garantie">
             </div>
         </div>
 
